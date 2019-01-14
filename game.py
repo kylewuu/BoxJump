@@ -16,17 +16,16 @@ class Bike:
 		self.back_wheel_x=back_wheel_x
 		self.back_wheel_y=back_wheel_y
 	def tire_position_update(self):
-		self.back_wheel_x=self.body_x+200 #loading front wheel
-		self.back_wheel_y=self.body_y+102
-		self.front_wheel_x=self.body_x-11 #loading back wheel
-		self.front_wheel_y=self.body_y+102
+		self.back_wheel_x=self.body_x+38 #loading front wheel
+		self.back_wheel_y=self.body_y+105
+		self.front_wheel_x=self.body_x+111 #loading back wheel
+		self.front_wheel_y=self.body_y+40
 
 #initiatlizing
-bike=Bike(10, 450,1,1,1,1) #where the pieces first load
-
+bike=Bike(10, 450,1,1,1,1) #where the pieces first load I have always been driven by the prospects of taking on new challenges
 width= 80
 height= 40
-velocity=10
+velocity=0
 rect_colour= (255,0,0)
 left=False
 right=True
@@ -34,13 +33,16 @@ walkCount=0
 clock=pygame.time.Clock()
 isJump=False
 jumpcount=7
+acceleration= 2
+decceleration=2
+braking=2
 
 
 #images loading
-moveleft=[pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180))]
+moveleft=[pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35), pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35)]
 #moveright=[pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False),pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False)] **no need for this anymore as you can't move left
-backwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(130,130)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(130,130))]
-frontwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(130,130)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(130,130))]
+backwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(45,45)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(45,45))]
+frontwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(45,45)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(45,45))]
 background= pygame.image.load('bg.png')
 
 #wheels temporary position/testing ***not working!!
@@ -49,7 +51,7 @@ win.blit(backwheel_img[0],(bike.back_wheel_x,bike.back_wheel_y))
 
 #functions
 def redrawgamewindow():
-	global walkCount
+	global walkCount #for having an animation when moving
 
 	win.blit(background, (0,0))
 	if walkCount >1:
@@ -62,6 +64,7 @@ def redrawgamewindow():
 	elif right:
 		win.blit(moveleft[walkCount],(bike.body_x,bike.body_y))
 		walkCount+=1
+
 
 	bike.tire_position_update()
 	win.blit(frontwheel_img[1],(bike.front_wheel_x,bike.front_wheel_y))
@@ -80,20 +83,27 @@ while(True):
 
 	keys= pygame.key.get_pressed()
 	if keys[pygame.K_w] and bike.body_x<=(screen_width-width):
-		bike.body_x+=velocity
-		right=True
-		left=False
+		velocity+=acceleration
+		#bike.body_x+=velocity
+		#right=True
+		#left=False
 
 	elif keys[pygame.K_s] and bike.body_x>=0:
-		bike.body_x-=velocity
-		left=True
-		right=False
+		velocity-=braking
+		#bike.body_x-=velocity
+		#left=True
+		#right=False
 
+	elif(velocity<0 and bike.body_x<=(screen_width-width)):
+		velocity+=2
+
+	elif(velocity>0 and bike.body_x<=(screen_width-width)):
+		velocity-=2
+
+	#jumping
 	if not(isJump):
-
 		if keys[pygame.K_SPACE]:
 			isJump= True
-
 	else:
 		if jumpcount >= -7:
 			neg= 1
@@ -105,3 +115,5 @@ while(True):
 		else:
 			isJump=False
 			jumpcount=7
+
+	bike.body_x+=velocity #main movingscreen_width-width
