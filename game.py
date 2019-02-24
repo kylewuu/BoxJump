@@ -23,7 +23,7 @@ class Bike:
 		self.front_wheel_y=self.body_y+40
 
 #initiatlizing
-bike=Bike(10, 450,1,1,1,1) #where the pieces first load
+bike=Bike(12, 450,1,1,1,1) #where the pieces first load
 tile_x=150
 tile_y=540
 tire_diameter=45
@@ -36,9 +36,9 @@ right=True
 walkCount=0
 clock=pygame.time.Clock()
 isJump=False
-jumpcount=7
-acceleration= 1
-decceleration=1
+jumpcount=10
+acceleration= 5
+decceleration=5
 backacceleration=0.5
 max_velocity=15
 no_forward= False
@@ -48,6 +48,12 @@ tile_length=60
 gravity=1
 bike.tire_position_update()
 default_land=bike.back_wheel_y+tire_diameter
+temp_land=tile_y
+#for the new jumping system
+gravity=10
+y_velocity=0
+initial_y_velocity=60
+
 
 
 #images loading
@@ -104,6 +110,24 @@ while(True):
 	tire_bottom_collide=bike.back_wheel_y+tire_diameter
 
 	#for when you're actually pressing the keys
+	#quadrant testings
+
+	if (tire_right_collide<=tile_x and bike.back_wheel_y>tile_y):
+		quadrant=1
+
+	elif(tire_right_collide<=tile_x and bike.back_wheel_y<tile_y):
+		quadrant=2
+
+	elif(bike.back_wheel_x<tile_x+tile_length and tire_right_collide>tile_x and bike.back_wheel_y>tile_y):
+		quadrant=3
+
+	elif(tire_bottom_collide<=tile_y and bike.back_wheel_x>=tile_x+tile_length):
+		quadrant=4
+
+	elif(tire_bottom_collide>tile_y and bike.back_wheel_x>=tile_x+tile_length):
+		quadrant=5
+
+
 	if quadrant==1:
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and no_forward==False and tire_right_collide<tile_x:
 			bike.body_x+=acceleration
@@ -117,6 +141,23 @@ while(True):
 		elif tire_right_collide<tile_x:
 			no_forward=False
 
+		temp_land=default_land
+
+		#new jumping (not too sure if it'll work)
+		if(tire_bottom_collide<temp_land):
+			y_velocity-=gravity
+
+		elif (tire_bottom_collide>=temp_land):
+			y_velocity=0
+			isJump=False
+			if not(isJump):
+				if keys[pygame.K_SPACE]:
+					isJump= True
+					y_velocity=initial_y_velocity
+		bike.body_y-=y_velocity
+
+		#old jumping
+		'''
 		#jumping
 		if not(isJump):
 			if keys[pygame.K_SPACE]:
@@ -125,7 +166,7 @@ while(True):
 			if tire_bottom_collide>default_land:
 				isJump=False
 
-			if jumpcount >= -7 and isJump==True:
+			if jumpcount >= -10 and isJump==True:
 				neg= 1
 				if jumpcount<0:
 					neg=-1
@@ -134,16 +175,33 @@ while(True):
 
 			else:
 				isJump=False
-				jumpcount=77
+				jumpcount=10
+				'''
 
 	elif quadrant==2:
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
 			bike.body_x+=acceleration
 
-		elif keys[pygame.K_w] and bike.body_x>=0 and velocity<=max_velocity and no_forward== False:
+		elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity:
 			bike.body_x-=decceleration
 
-		#jumping
+		temp_land=default_land
+
+		#new jumping (not too sure if it'll work)
+		if(tire_bottom_collide<temp_land):
+			y_velocity-=gravity
+
+		elif (tire_bottom_collide>=temp_land):
+			y_velocity=0
+			isJump=False
+			if not(isJump):
+				if keys[pygame.K_SPACE]:
+					isJump= True
+					y_velocity=initial_y_velocity
+		bike.body_y-=y_velocity
+
+		#old jumping
+		'''
 		if not(isJump):
 			if keys[pygame.K_SPACE]:
 				isJump= True
@@ -151,7 +209,7 @@ while(True):
 			if tire_bottom_collide>default_land:
 				isJump=False
 
-			if jumpcount >= -7 and isJump==True:
+			if jumpcount >= -10 and isJump==True:
 				neg= 1
 				if jumpcount<0:
 					neg=-1
@@ -160,25 +218,44 @@ while(True):
 
 			else:
 				isJump=False
-				jumpcount=7
+				jumpcount=10
+		'''
 
 
 	elif quadrant==3:#quadrant 3 needs a lot of work
-		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
-			velocity+=acceleration
+		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and tire_bottom_collide<=tile_y:
+			bike.body_x+=acceleration
 
-		elif keys[pygame.K_w] and bike.body_x>=0 and velocity<=max_velocity:
-			velocity-=decceleration
+		elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity:
+			bike.body_x-=decceleration
 
-		#jumping
+		temp_land=tile_y
+
+		#new jumping (not too sure if it'll work)
+		if(tire_bottom_collide<temp_land):
+			y_velocity-=gravity
+
+		elif (tire_bottom_collide>=temp_land):
+			y_velocity=0
+			isJump=False
+			if not(isJump):
+				if keys[pygame.K_SPACE]:
+					isJump= True
+					y_velocity=initial_y_velocity
+		bike.body_y-=y_velocity
+
+
+		#old jumping
+		'''
 		if not(isJump):
 			if keys[pygame.K_SPACE]:
 				isJump= True
 		else:
 			if tire_bottom_collide>tile_y:
 				isJump=False
+				noFall=True
 
-			if jumpcount >= -7 and isJump==True:
+			if jumpcount >= -10 and isJump==True:
 				neg= 1
 				if jumpcount<0:
 					neg=-1
@@ -187,55 +264,88 @@ while(True):
 
 			else:
 				isJump=False
-				jumpcount=7
-
-	'''
+				jumpcount=10
+		'''
 	elif quadrant==4:
-		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and no_forward== False:
-			velocity+=acceleration
+		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
+			bike.body_x+=acceleration
 
-		elif keys[pygame.K_w] and bike.body_x>=0 and velocity<=max_velocity and no_forward== False:
-			velocity-=decceleration
+		elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity:
+			bike.body_x-=decceleration
 
-		#for slowing down
-		elif(velocity<0 and bike.body_x<=(screen_width-width)):
-			velocity+=acceleration
+		temp_land=default_land
 
-		elif(velocity>0 and bike.body_x<=(screen_width-width)):
-			velocity-=decceleration
+		#new jumping (not too sure if it'll work)
+		if(tire_bottom_collide<temp_land):
+			y_velocity-=gravity
 
-	elif quadrant==5:
-		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and no_forward== False:
-			velocity+=acceleration
-
-		elif keys[pygame.K_w] and bike.body_x>=0 and velocity<=max_velocity and no_forward== False:
-			velocity-=decceleration
-
-		#for slowing down
-		elif(velocity<0 and bike.body_x<=(screen_width-width)):
-			velocity+=acceleration
-
-		elif(velocity>0 and bike.body_x<=(screen_width-width)):
-			velocity-=decceleration
-	'''
+		elif (tire_bottom_collide>=temp_land):
+			y_velocity=0
+			isJump=False
+			if not(isJump):
+				if keys[pygame.K_SPACE]:
+					isJump= True
+					y_velocity=initial_y_velocity
+		bike.body_y-=y_velocity
 
 
+	if quadrant==5:
+		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity :
+			bike.body_x+=acceleration
 
-	#quadrant testings
-	if (tire_right_collide<=tile_x and bike.back_wheel_y>tile_y):
-		quadrant=1
+		elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity and no_backward==False and tire_left_collide>tile_x+tile_length:
+			bike.body_x-=decceleration
 
-	elif(tire_right_collide<=tile_x and bike.back_wheel_y<tile_y):
-		quadrant=2
+		elif tire_left_collide<=tile_x:
+			no_backward=True
 
-	elif(bike.back_wheel_x+tire_diameter<tile_x+tile_length and bike.back_wheel_x>tile_x and bike.back_wheel_y>tile_y):
-		quadrant=3
+		elif tire_left_collide>tile_x:
+			no_backward=False
 
-	elif(bike.back_wheel_y<tile_y and bike.back_wheel_x>tile_x+tile_length):
-		quadrant=4
+		temp_land=default_land
 
-	elif(bike.back_wheel_y>tile_y and bike.back_wheel_x>tile_x+tile_length):
-		quadrant=5
+		#new jumping (not too sure if it'll work)
+		if(tire_bottom_collide<temp_land):
+			y_velocity-=gravity
+
+		elif (tire_bottom_collide>=temp_land):
+			y_velocity=0
+			isJump=False
+			if not(isJump):
+				if keys[pygame.K_SPACE]:
+					isJump= True
+					y_velocity=initial_y_velocity
+		bike.body_y-=y_velocity
+
+		#old jumping
+		'''
+		#jumping
+		if not(isJump):
+			if keys[pygame.K_SPACE]:
+				isJump= True
+		else:
+			if tire_bottom_collide>default_land:
+				isJump=False
+
+			if jumpcount >= -10 and isJump==True:
+				neg= 1
+				if jumpcount<0:
+					neg=-1
+				bike.body_y-= (jumpcount**2)*0.5*neg
+				jumpcount-=1
+
+			else:
+				isJump=False
+				jumpcount=10
+				'''
 
 
-	print("default land ",default_land,"tire_bottom_collide",tire_bottom_collide,"bike.back_wheel_y ",bike.back_wheel_y,"quadrant ",quadrant)
+
+
+
+
+
+
+
+
+	print("temp land ",temp_land,"tire_bottom_collide",tire_bottom_collide,"bike.back_wheel_y ",bike.back_wheel_y,"quadrant ",quadrant, "isJump", isJump,"y_velocity", y_velocity,"tire_right_collide",tire_right_collide,"tile_x",tile_x)
