@@ -118,7 +118,7 @@ while(True):
 	elif(tire_right_collide<=tile_x and bike.back_wheel_y<tile_y):
 		quadrant=2
 
-	elif(bike.back_wheel_x<tile_x+tile_length and tire_right_collide>tile_x and bike.back_wheel_y>tile_y):
+	elif(bike.back_wheel_x<tile_x+tile_length and tire_right_collide>tile_x and tire_bottom_collide<tile_y):
 		quadrant=3
 
 	elif(tire_bottom_collide<=tile_y and bike.back_wheel_x>=tile_x+tile_length):
@@ -144,7 +144,7 @@ while(True):
 		temp_land=default_land
 
 		#new jumping (not too sure if it'll work)
-		if(tire_bottom_collide<temp_land):
+		if(tire_bottom_collide<temp_land and y_velocity>=-50):
 			y_velocity-=gravity
 
 		elif (tire_bottom_collide>=temp_land):
@@ -188,7 +188,7 @@ while(True):
 		temp_land=default_land
 
 		#new jumping (not too sure if it'll work)
-		if(tire_bottom_collide<temp_land):
+		if(tire_bottom_collide<temp_land and y_velocity>=-50):
 			y_velocity-=gravity
 
 		elif (tire_bottom_collide>=temp_land):
@@ -232,7 +232,7 @@ while(True):
 		temp_land=tile_y
 
 		#new jumping (not too sure if it'll work)
-		if(tire_bottom_collide<temp_land):
+		if(tire_bottom_collide<temp_land and y_velocity>=-50):
 			y_velocity-=gravity
 
 		elif (tire_bottom_collide>=temp_land):
@@ -276,7 +276,7 @@ while(True):
 		temp_land=default_land
 
 		#new jumping (not too sure if it'll work)
-		if(tire_bottom_collide<temp_land):
+		if(tire_bottom_collide<temp_land and y_velocity>=-50):
 			y_velocity-=gravity
 
 		elif (tire_bottom_collide>=temp_land):
@@ -305,7 +305,7 @@ while(True):
 		temp_land=default_land
 
 		#new jumping (not too sure if it'll work)
-		if(tire_bottom_collide<temp_land):
+		if(tire_bottom_collide<temp_land and y_velocity>=-50):
 			y_velocity-=gravity
 
 		elif (tire_bottom_collide>=temp_land):
@@ -348,4 +348,4 @@ while(True):
 
 
 
-	print("temp land ",temp_land,"tire_bottom_collide",tire_bottom_collide,"bike.back_wheel_y ",bike.back_wheel_y,"quadrant ",quadrant, "isJump", isJump,"y_velocity", y_velocity,"tire_right_collide",tire_right_collide,"tile_x",tile_x)
+	print("temp land ",temp_land,"tire_bottom_collide",tire_bottom_collide,"quadrant ", quadrant, "y_velocity",y_velocity)
