@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 
 pygame.init()
 screen_width=1200
@@ -26,6 +27,7 @@ class Bike:
 bike=Bike(12, 450,1,1,1,1) #where the pieces first load
 tile_x=150
 tile_y=540
+tileYMark=540
 tire_diameter=45
 width= 80
 height= 40
@@ -66,7 +68,53 @@ background= pygame.image.load('bg.png')
 #tiles
 tiles=pygame.transform.scale(pygame.image.load('tiles/Crate.png'), (tile_length,tile_length))
 tiles_array=[]
+#initial tile generating
+tilesArrayX=[150,300,450,600,750,800,950,1100]
+tilesArrayY=[0,0,0,0,0,0,0,0]
+tileSizes=[1,2,3]
+for i in range(8):
+	tilesArrayY[i]=random.choice(tileSizes)
 
+#functions
+def tilesGeneration():
+	for i in range(8):
+		if(tilesArrayY[i]==1):
+			win.blit(tiles,(tilesArrayX[i], tileYMark))
+
+		elif(tilesArrayY[i]==2):
+			win.blit(tiles,(tilesArrayX[i], tileYMark))
+			win.blit(tiles,(tilesArrayX[i], tileYMark-tile_length))
+
+		elif(tilesArrayY[i]==3):
+			win.blit(tiles,(tilesArrayX[i], tileYMark))
+			win.blit(tiles,(tilesArrayX[i], tileYMark-tile_length))
+			win.blit(tiles,(tilesArrayX[i], tileYMark-(tile_length*2)))
+
+
+def tilesMoving():
+	if((tilesArrayX[0]+tile_length)<=0):
+		for i in range(7):
+			tilesArrayX[i]=tilesArrayX[i+1]
+			tilesArrayY[i]=tilesArrayY[i+1]
+		tilesArrayX[7]=tilesArrayX[6]+150
+		tilesArrayY[7]=random.choice(tileSizes)
+
+	for k in range(8):
+		tilesArrayX[k]-=1
+	tilesGeneration()
+
+def tileDetection():
+	global tile_x
+	global tile_y
+	closest=500
+	tempDistance=0
+	for i in range(8):
+		tempDistance=abs(tilesArrayX[i]-bike.back_wheel_x)
+		if (tempDistance<closest):
+			closest=tempDistance
+			closestIndex=i
+	tile_x=tilesArrayX[closestIndex]
+	tile_y=tileYMark-(tile_length*(tilesArrayY[closestIndex]-1))
 
 #functions
 def redrawgamewindow():
@@ -90,9 +138,13 @@ def redrawgamewindow():
 	win.blit(backwheel_img[0],(bike.back_wheel_x,bike.back_wheel_y))
 
 	#tiles drawing
-	win.blit(tiles,(tile_x, tile_y))
 
+	tilesMoving()
+	tileDetection()
 	pygame.display.update()
+
+
+
 
 #main loop to run the game
 while(True):
@@ -156,27 +208,6 @@ while(True):
 					y_velocity=initial_y_velocity
 		bike.body_y-=y_velocity
 
-		#old jumping
-		'''
-		#jumping
-		if not(isJump):
-			if keys[pygame.K_SPACE]:
-				isJump= True
-		else:
-			if tire_bottom_collide>default_land:
-				isJump=False
-
-			if jumpcount >= -10 and isJump==True:
-				neg= 1
-				if jumpcount<0:
-					neg=-1
-				bike.body_y-= (jumpcount**2)*0.5*neg
-				jumpcount-=1
-
-			else:
-				isJump=False
-				jumpcount=10
-				'''
 
 	elif quadrant==2:
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
@@ -200,26 +231,6 @@ while(True):
 					y_velocity=initial_y_velocity
 		bike.body_y-=y_velocity
 
-		#old jumping
-		'''
-		if not(isJump):
-			if keys[pygame.K_SPACE]:
-				isJump= True
-		else:
-			if tire_bottom_collide>default_land:
-				isJump=False
-
-			if jumpcount >= -10 and isJump==True:
-				neg= 1
-				if jumpcount<0:
-					neg=-1
-				bike.body_y-= (jumpcount**2)*0.5*neg
-				jumpcount-=1
-
-			else:
-				isJump=False
-				jumpcount=10
-		'''
 
 
 	elif quadrant==3:#quadrant 3 needs a lot of work
@@ -245,27 +256,7 @@ while(True):
 		bike.body_y-=y_velocity
 
 
-		#old jumping
-		'''
-		if not(isJump):
-			if keys[pygame.K_SPACE]:
-				isJump= True
-		else:
-			if tire_bottom_collide>tile_y:
-				isJump=False
-				noFall=True
 
-			if jumpcount >= -10 and isJump==True:
-				neg= 1
-				if jumpcount<0:
-					neg=-1
-				bike.body_y-= (jumpcount**2)*0.5*neg
-				jumpcount-=1
-
-			else:
-				isJump=False
-				jumpcount=10
-		'''
 	elif quadrant==4:
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
 			bike.body_x+=acceleration
@@ -317,35 +308,5 @@ while(True):
 					y_velocity=initial_y_velocity
 		bike.body_y-=y_velocity
 
-		#old jumping
-		'''
-		#jumping
-		if not(isJump):
-			if keys[pygame.K_SPACE]:
-				isJump= True
-		else:
-			if tire_bottom_collide>default_land:
-				isJump=False
 
-			if jumpcount >= -10 and isJump==True:
-				neg= 1
-				if jumpcount<0:
-					neg=-1
-				bike.body_y-= (jumpcount**2)*0.5*neg
-				jumpcount-=1
-
-			else:
-				isJump=False
-				jumpcount=10
-				'''
-
-
-
-
-
-
-
-
-
-
-	print("temp land ",temp_land,"tire_bottom_collide",tire_bottom_collide,"quadrant ", quadrant, "y_velocity",y_velocity)
+	print("tile y",tile_y, "temp land",temp_land, "tire_bottom_collide",tire_bottom_collide, "y velocity", y_velocity)
