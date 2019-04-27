@@ -24,7 +24,7 @@ class Bike:
 		self.front_wheel_y=self.body_y+40
 
 #initiatlizing
-bike=Bike(12, 450,1,1,1,1) #where the pieces first load
+bike=Bike(12, 200,1,1,1,1) #where the pieces first load
 tile_x=150
 tile_y=540
 tileYMark=540
@@ -49,14 +49,12 @@ quadrant=1
 tile_length=60
 gravity=1
 bike.tire_position_update()
-default_land=bike.back_wheel_y+tire_diameter
+default_land=600
 temp_land=tile_y
 #for the new jumping system
 gravity=10
 y_velocity=0
 initial_y_velocity=60
-
-
 
 #images loading
 moveleft=[pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35), pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35)]
@@ -69,9 +67,11 @@ background= pygame.image.load('bg.png')
 tiles=pygame.transform.scale(pygame.image.load('tiles/Crate.png'), (tile_length,tile_length))
 tiles_array=[]
 #initial tile generating
-tilesArrayX=[150,300,450,600,750,800,950,1100]
+tilesArrayX=[50,200,350,500,650,800,950,1100]
 tilesArrayY=[0,0,0,0,0,0,0,0]
 tileSizes=[1,2,3]
+
+#initializing tile heights
 for i in range(8):
 	tilesArrayY[i]=random.choice(tileSizes)
 
@@ -89,19 +89,6 @@ def tilesGeneration():
 			win.blit(tiles,(tilesArrayX[i], tileYMark))
 			win.blit(tiles,(tilesArrayX[i], tileYMark-tile_length))
 			win.blit(tiles,(tilesArrayX[i], tileYMark-(tile_length*2)))
-
-
-def tilesMoving():
-	if((tilesArrayX[0]+tile_length)<=0):
-		for i in range(7):
-			tilesArrayX[i]=tilesArrayX[i+1]
-			tilesArrayY[i]=tilesArrayY[i+1]
-		tilesArrayX[7]=tilesArrayX[6]+150
-		tilesArrayY[7]=random.choice(tileSizes)
-
-	for k in range(8):
-		tilesArrayX[k]-=1
-	tilesGeneration()
 
 def tileDetection():
 	global tile_x
@@ -138,16 +125,32 @@ def redrawgamewindow():
 	win.blit(backwheel_img[0],(bike.back_wheel_x,bike.back_wheel_y))
 
 	#tiles drawing
-
-	tilesMoving()
+	tilesGeneration()
 	tileDetection()
 	pygame.display.update()
 
+def gravityCheck(tempLandTemp, yVelocityTemp,tire_bottom_collide):
+	numFall=int(yVelocityTemp/10)
+	if (numFall<0):
+		numFall=numFall*(-1)
+		for p in range(numFall):
+			bike.tire_position_update()
+			tire_bottom_collide=bike.back_wheel_y+tire_diameter
 
+			if(tire_bottom_collide<tempLandTemp):
+				bike.body_y+=10
 
+	elif (numFall>0):
+		for n in range(numFall):
+			bike.tire_position_update()
+			tire_bottom_collide=bike.back_wheel_y+tire_diameter
+
+			if(tire_bottom_collide<=tempLandTemp):
+				bike.body_y-=10
 
 #main loop to run the game
 while(True):
+
 	redrawgamewindow()
 	clock.tick(60)
 	for event in pygame.event.get():
@@ -161,9 +164,8 @@ while(True):
 	tire_right_collide=bike.back_wheel_x+tire_diameter
 	tire_bottom_collide=bike.back_wheel_y+tire_diameter
 
-	#for when you're actually pressing the keys
-	#quadrant testings
 
+	#quadrant testings
 	if (tire_right_collide<=tile_x and bike.back_wheel_y>tile_y):
 		quadrant=1
 
@@ -178,7 +180,6 @@ while(True):
 
 	elif(tire_bottom_collide>tile_y and bike.back_wheel_x>=tile_x+tile_length):
 		quadrant=5
-
 
 	if quadrant==1:
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and no_forward==False and tire_right_collide<tile_x:
@@ -206,10 +207,14 @@ while(True):
 				if keys[pygame.K_SPACE]:
 					isJump= True
 					y_velocity=initial_y_velocity
-		bike.body_y-=y_velocity
 
 
-	elif quadrant==2:
+		gravityCheck(temp_land,y_velocity, tire_bottom_collide)
+
+		# bike.body_y-=y_velocity
+
+
+	elif (quadrant==2):
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
 			bike.body_x+=acceleration
 
@@ -229,11 +234,12 @@ while(True):
 				if keys[pygame.K_SPACE]:
 					isJump= True
 					y_velocity=initial_y_velocity
-		bike.body_y-=y_velocity
+
+		gravityCheck(temp_land,y_velocity, tire_bottom_collide)
+		# bike.body_y-=y_velocity
 
 
-
-	elif quadrant==3:#quadrant 3 needs a lot of work
+	elif quadrant==3:
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and tire_bottom_collide<=tile_y:
 			bike.body_x+=acceleration
 
@@ -242,7 +248,7 @@ while(True):
 
 		temp_land=tile_y
 
-		#new jumping (not too sure if it'll work)
+		#new jumping
 		if(tire_bottom_collide<temp_land and y_velocity>=-50):
 			y_velocity-=gravity
 
@@ -253,8 +259,8 @@ while(True):
 				if keys[pygame.K_SPACE]:
 					isJump= True
 					y_velocity=initial_y_velocity
-		bike.body_y-=y_velocity
 
+		gravityCheck(temp_land,y_velocity,tire_bottom_collide)
 
 
 	elif quadrant==4:
@@ -277,10 +283,12 @@ while(True):
 				if keys[pygame.K_SPACE]:
 					isJump= True
 					y_velocity=initial_y_velocity
-		bike.body_y-=y_velocity
+
+		gravityCheck(temp_land,y_velocity, tire_bottom_collide)
+		# bike.body_y-=y_velocity
 
 
-	if quadrant==5:
+	elif quadrant==5:
 		if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity :
 			bike.body_x+=acceleration
 
@@ -306,7 +314,12 @@ while(True):
 				if keys[pygame.K_SPACE]:
 					isJump= True
 					y_velocity=initial_y_velocity
-		bike.body_y-=y_velocity
+
+		gravityCheck(temp_land,y_velocity, tire_bottom_collide)
+		# bike.body_y-=y_velocity
+
+	if(tire_bottom_collide==default_land):
+		pygame.quit()
 
 
-	print("tile y",tile_y, "temp land",temp_land, "tire_bottom_collide",tire_bottom_collide, "y velocity", y_velocity)
+	print("q",quadrant, "temp land",temp_land, "tire_bottom_collide",tire_bottom_collide, "y velocity", y_velocity)
