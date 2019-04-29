@@ -55,6 +55,9 @@ temp_land=tile_y
 gravity=10
 y_velocity=0
 initial_y_velocity=60
+score=0
+newTile= True
+
 
 #images loading
 moveleft=[pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35), pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35)]
@@ -62,6 +65,20 @@ moveleft=[pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offr
 backwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
 frontwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
 background= pygame.image.load('bg.png')
+numberArray= [
+pygame.transform.scale(pygame.image.load('numbers/0.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/1.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/2.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/3.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/4.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/5.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/6.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/7.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/8.png'),(50,50)),
+pygame.transform.scale(pygame.image.load('numbers/9.png'),(50,50)),
+] #for the score tings
+firstNumberScore=numberArray[0]#sets the score to 0
+secondNumberScore=numberArray[0]
 
 #tiles
 tiles=pygame.transform.scale(pygame.image.load('tiles/Crate.png'), (tile_length,tile_length))
@@ -127,7 +144,9 @@ def redrawgamewindow():
 	#tiles drawing
 	tilesGeneration()
 	tileDetection()
+	scoreFunction()
 	pygame.display.update()
+
 
 def gravityCheck(tempLandTemp, yVelocityTemp,tire_bottom_collide):
 	numFall=int(yVelocityTemp/10)
@@ -147,6 +166,23 @@ def gravityCheck(tempLandTemp, yVelocityTemp,tire_bottom_collide):
 
 			if(tire_bottom_collide<=tempLandTemp):
 				bike.body_y-=10
+
+def nextScreen():
+	bike.body_x=20
+	tilesArrayY[0]=tilesArrayY[7]
+	for i in range(7):
+		tilesArrayY[i+1]=random.choice(tileSizes)
+	tilesGeneration()
+	time.sleep(0.15)
+
+def scoreFunction():
+
+	if(len(str(score))==1): #this is for when the score is less than two digits
+		firstNumberScore=numberArray[0]
+		secondNumberScore=numberArray[score]
+	win.blit(firstNumberScore,(800,50))#first number CONTAINS THE POSITION FOR THE SCORE
+	win.blit(secondNumberScore,(850,50))#second number
+
 
 #main loop to run the game
 while(True):
@@ -261,6 +297,8 @@ while(True):
 					y_velocity=initial_y_velocity
 
 		gravityCheck(temp_land,y_velocity,tire_bottom_collide)
+		score+=1
+		newTile= False #for resetting the new tile
 
 
 	elif quadrant==4:
@@ -318,8 +356,11 @@ while(True):
 		gravityCheck(temp_land,y_velocity, tire_bottom_collide)
 		# bike.body_y-=y_velocity
 
-	if(tire_bottom_collide==default_land):
-		pygame.quit()
+	# if(tire_bottom_collide==default_land):
+	# 	pygame.quit()
+
+	if(quadrant==3 and tire_right_collide>1100):
+		nextScreen()
 
 
 	print("q",quadrant, "temp land",temp_land, "tire_bottom_collide",tire_bottom_collide, "y velocity", y_velocity)
