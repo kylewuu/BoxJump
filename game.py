@@ -64,7 +64,7 @@ moveleft=[pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offr
 #moveright=[pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False),pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False)] **no need for this anymore as you can't move left
 backwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
 frontwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
-background= pygame.image.load('bg.png')
+background= pygame.image.load('bgNew.png')
 numberArray= [
 pygame.transform.scale(pygame.image.load('numbers/0.png'),(50,50)),
 pygame.transform.scale(pygame.image.load('numbers/1.png'),(50,50)),
@@ -110,6 +110,8 @@ def tilesGeneration():
 def tileDetection():
 	global tile_x
 	global tile_y
+	global newTile
+	tempX=tile_x
 	closest=500
 	tempDistance=0
 	for i in range(8):
@@ -119,6 +121,8 @@ def tileDetection():
 			closestIndex=i
 	tile_x=tilesArrayX[closestIndex]
 	tile_y=tileYMark-(tile_length*(tilesArrayY[closestIndex]-1))
+	if(tempX!=tile_x):
+		newTile= True
 
 #functions
 def redrawgamewindow():
@@ -180,6 +184,9 @@ def scoreFunction():
 	if(len(str(score))==1): #this is for when the score is less than two digits
 		firstNumberScore=numberArray[0]
 		secondNumberScore=numberArray[score]
+	elif(len(str(score))==2):
+		firstNumberScore=numberArray[int(str(score)[0])]
+		secondNumberScore=numberArray[int(str(score)[1])]
 	win.blit(firstNumberScore,(800,50))#first number CONTAINS THE POSITION FOR THE SCORE
 	win.blit(secondNumberScore,(850,50))#second number
 
@@ -297,8 +304,11 @@ while(True):
 					y_velocity=initial_y_velocity
 
 		gravityCheck(temp_land,y_velocity,tire_bottom_collide)
-		score+=1
-		newTile= False #for resetting the new tile
+
+		if(newTile== True): #for resetting the new tile
+			score+=1
+			newTile= False
+
 
 
 	elif quadrant==4:
@@ -362,5 +372,4 @@ while(True):
 	if(quadrant==3 and tire_right_collide>1100):
 		nextScreen()
 
-
-	print("q",quadrant, "temp land",temp_land, "tire_bottom_collide",tire_bottom_collide, "y velocity", y_velocity)
+	print("q",quadrant, "newTile", newTile, "score", score)
