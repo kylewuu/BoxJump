@@ -1,5 +1,10 @@
-# SidescrollingGame
-Hey and welcome to my project that I am developing
+--------CONTROLS--------
+W- Move forward
+S- Move backward
+SPACE- jump
 
-This is a side-scrolling/biking/platform game that I am working on
-
+-------------------NOTES--------------------------------
+Touch the ground and you lose, stay on the tiles. Each new tile is one point.
+Top score is your highscore
+Lower score is your current round score
+The double jump feature where you can bounce off the ground is intentional; without it the game is pretty much impossible.
