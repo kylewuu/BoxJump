@@ -1,3 +1,5 @@
+highscore=0
+
 while(True):
 	import pygame
 	import time
@@ -58,6 +60,7 @@ while(True):
 	initial_y_velocity=60
 	score=0
 	newTile= True
+	quitCounter=0
 
 
 	#images loading
@@ -181,15 +184,63 @@ while(True):
 		time.sleep(0.15)
 
 	def scoreFunction():
-
+		global highscore
 		if(len(str(score))==1): #this is for when the score is less than two digits
 			firstNumberScore=numberArray[0]
 			secondNumberScore=numberArray[score]
 		elif(len(str(score))==2):
 			firstNumberScore=numberArray[int(str(score)[0])]
 			secondNumberScore=numberArray[int(str(score)[1])]
-		win.blit(firstNumberScore,(800,50))#first number CONTAINS THE POSITION FOR THE SCORE
-		win.blit(secondNumberScore,(850,50))#second number
+		win.blit(firstNumberScore,(800,110))#first number CONTAINS THE POSITION FOR THE SCORE
+		win.blit(secondNumberScore,(850,110))#second number
+		quitCounter=0 #for double jumping
+
+		#highscore
+		if(score> highscore): #highscore counts up with your score
+			highscore=score
+			if(len(str(highscore))==1): #this is for when the score is less than two digits
+				firstNumberHighScore=numberArray[0]
+				secondNumberHighScore=numberArray[highscore]
+			elif(len(str(highscore))==2):
+				firstNumberHighScore=numberArray[int(str(highscore)[0])]
+				secondNumberHighScore=numberArray[int(str(highscore)[1])]
+			win.blit(firstNumberHighScore,(800,50))#first number CONTAINS THE POSITION FOR THE SCORE
+			win.blit(secondNumberHighScore,(850,50))#second number
+			quitCounter=0 #for double jumping
+
+		elif (score<= highscore):
+			if(len(str(highscore))==1): #this is for when the score is less than two digits
+				firstNumberHighScore=numberArray[0]
+				secondNumberHighScore=numberArray[highscore]
+			elif(len(str(highscore))==2):
+				firstNumberHighScore=numberArray[int(str(highscore)[0])]
+				secondNumberHighScore=numberArray[int(str(highscore)[1])]
+			win.blit(firstNumberHighScore,(800,50))#first number CONTAINS THE POSITION FOR THE SCORE
+			win.blit(secondNumberHighScore,(850,50))#second number
+			quitCounter=0 #for double jumping
+
+	# def acceleration(velocity):
+	# 	global velocity #decreases velocity or increases it depending on what the vector is
+	# 	global til
+	#
+	# 	#for checking against collision
+	# 	if (velocity<0):
+	# 		velocity=velocity*(-1)
+	# 		for p in range(velocity):
+	# 			bike.tire_position_update()
+	# 			tire_left_collide=bike.back_wheel_x
+	#
+	# 			if(tire_left_collide<tempLandTemp):
+	# 				bike.body_x+=1
+	#
+	# 	elif (velocity>0):
+	# 		for n in range(velocity):
+	# 			bike.tire_position_update()
+	# 			tire_right_collide=bike.back_wheel_x+tire_diameter
+	#
+	# 			if(tire_right_collide<=tempLandTemp):
+	# 				bike.body_y-=10
+	#lowkey impossible to do
 
 
 	#main loop to run the game
@@ -368,9 +419,9 @@ while(True):
 			# bike.body_y-=y_velocity
 
 		if(tire_bottom_collide==default_land):
-			break
+			quitCounter+=1
+			if(quitCounter>=2): #this makes it so that you can double jump in mid-aor but you won't be able to stay on the ground for too long
+				break
 
 		if(quadrant==3 and tire_right_collide>1100):
 			nextScreen()
-
-		print("q",quadrant, "newTile", newTile, "score", score)
