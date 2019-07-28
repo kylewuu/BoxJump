@@ -4,6 +4,8 @@ while(True):
 	import pygame
 	import time
 	import random
+	import os
+	os.chdir('C:/Users/Wu/Desktop/Coding/Pygame/SidescrollingGame') #might need to change the path of the folder
 
 	pygame.init()
 	screen_width=1200
@@ -50,24 +52,25 @@ while(True):
 	no_backward= False #for collisions on side of crates
 	quadrant=1
 	tile_length=60
-	gravity=1
 	bike.tire_position_update()
 	default_land=600
 	temp_land=tile_y
 	#for the new jumping system
-	gravity=10
+	gravity=5
 	y_velocity=0
-	initial_y_velocity=60
+	initial_y_velocity=40
 	score=0
 	newTile= True
 	quitCounter=0
+	jumpSpacer=25
+	jumpSpacerTimer=jumpSpacer
 
 
 	#images loading
 	moveleft=[pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35), pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35)]
 	#moveright=[pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False),pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False)] **no need for this anymore as you can't move left
-	backwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
-	frontwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
+	backwheel_img=[pygame.transform.scale(pygame.image.load('offroad//tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad//tire.png'),(90)),(tire_diameter,tire_diameter))]
+	frontwheel_img=[pygame.transform.scale(pygame.image.load('C:/Users/Wu/Desktop/Coding/Pygame/SidescrollingGame/offroad//tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
 	background= pygame.image.load('bgNewJ.jpg')
 	numberArray= [
 	pygame.transform.scale(pygame.image.load('numbers/0.png'),(50,50)),
@@ -299,9 +302,10 @@ while(True):
 				y_velocity=0
 				isJump=False
 				if not(isJump):
-					if keys[pygame.K_SPACE]:
+					if keys[pygame.K_SPACE] and jumpSpacerTimer> jumpSpacer:
 						isJump= True
 						y_velocity=initial_y_velocity
+						jumpSpacerTimer=0
 
 
 			gravityCheck(temp_land,y_velocity, tire_bottom_collide)
@@ -326,9 +330,10 @@ while(True):
 				y_velocity=0
 				isJump=False
 				if not(isJump):
-					if keys[pygame.K_SPACE]:
+					if keys[pygame.K_SPACE] and jumpSpacerTimer> jumpSpacer:
 						isJump= True
 						y_velocity=initial_y_velocity
+						jumpSpacerTimer=0
 
 			gravityCheck(temp_land,y_velocity, tire_bottom_collide)
 			# bike.body_y-=y_velocity
@@ -351,9 +356,10 @@ while(True):
 				y_velocity=0
 				isJump=False
 				if not(isJump):
-					if keys[pygame.K_SPACE]:
+					if keys[pygame.K_SPACE] and jumpSpacerTimer> jumpSpacer:
 						isJump= True
 						y_velocity=initial_y_velocity
+						jumpSpacerTimer=0
 
 			gravityCheck(temp_land,y_velocity,tire_bottom_collide)
 
@@ -380,9 +386,10 @@ while(True):
 				y_velocity=0
 				isJump=False
 				if not(isJump):
-					if keys[pygame.K_SPACE]:
+					if keys[pygame.K_SPACE] and jumpSpacerTimer> jumpSpacer:
 						isJump= True
 						y_velocity=initial_y_velocity
+						jumpSpacerTimer=0
 
 			gravityCheck(temp_land,y_velocity, tire_bottom_collide)
 			# bike.body_y-=y_velocity
@@ -411,17 +418,20 @@ while(True):
 				y_velocity=0
 				isJump=False
 				if not(isJump):
-					if keys[pygame.K_SPACE]:
+					if keys[pygame.K_SPACE] and jumpSpacerTimer> jumpSpacer:
 						isJump= True
 						y_velocity=initial_y_velocity
+						jumpSpacerTimer=0
 
 			gravityCheck(temp_land,y_velocity, tire_bottom_collide)
 			# bike.body_y-=y_velocity
 
 		if(tire_bottom_collide==default_land):
 			quitCounter+=1
-			if(quitCounter>=2): #this makes it so that you can double jump in mid-aor but you won't be able to stay on the ground for too long
+			if(quitCounter>=0): #this makes it so that you can double jump in mid-aor but you won't be able to stay on the ground for too long
 				break
 
 		if(quadrant==3 and tire_right_collide>1100):
 			nextScreen()
+
+		jumpSpacerTimer+=1
