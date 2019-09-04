@@ -155,7 +155,7 @@ while(True):
 		bike.tire_position_update()
 		win.blit(frontwheel_img[1],(bike.front_wheel_x,bike.front_wheel_y))
 		win.blit(backwheel_img[rollCount],(bike.back_wheel_x,bike.back_wheel_y))
-		print(rollCount)
+
 
 		#tiles drawing
 		tilesGeneration()
