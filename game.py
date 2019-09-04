@@ -5,7 +5,8 @@ while(True):
 	import time
 	import random
 	import os
-	os.chdir('C:/Users/Wu/Desktop/Coding/Pygame/SidescrollingGame') #might need to change the path of the folder
+	# os.chdir('C:/Users/Wu/Desktop/Coding/Pygame/SidescrollingGame') #might need to change the path of the folder
+	os.chdir('C:/Users/kyle-/OneDrive/桌面/Projects/Game/BoxJump') #might need to change the path of the folder
 
 	pygame.init()
 	screen_width=1200
@@ -65,12 +66,14 @@ while(True):
 	jumpSpacer=25
 	jumpSpacerTimer=jumpSpacer
 
+	rollCount=0
+
 
 	#images loading
 	moveleft=[pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35), pygame.transform.rotate(pygame.transform.scale(pygame.image.load('offroad/body.png'),(140,80)),35)]
 	#moveright=[pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False),pygame.transform.flip(pygame.transform.scale(pygame.image.load('offroad/body.png'),(300,180)), True, False)] **no need for this anymore as you can't move left
-	backwheel_img=[pygame.transform.scale(pygame.image.load('offroad//tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad//tire.png'),(90)),(tire_diameter,tire_diameter))]
-	frontwheel_img=[pygame.transform.scale(pygame.image.load('C:/Users/Wu/Desktop/Coding/Pygame/SidescrollingGame/offroad//tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
+	backwheel_img=[pygame.transform.scale(pygame.image.load('offroad/tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.image.load('offroad/tire1.png'),(tire_diameter,tire_diameter))]
+	frontwheel_img=[pygame.transform.scale(pygame.image.load('offroad//tire.png'),(tire_diameter,tire_diameter)), pygame.transform.scale(pygame.transform.rotate(pygame.image.load('offroad/tire.png'),(90)),(tire_diameter,tire_diameter))]
 	background= pygame.image.load('bgNewJ.jpg')
 	numberArray= [
 	pygame.transform.scale(pygame.image.load('numbers/0.png'),(50,50)),
@@ -86,6 +89,7 @@ while(True):
 	] #for the score tings
 	firstNumberScore=numberArray[0]#sets the score to 0
 	secondNumberScore=numberArray[0]
+
 
 	#tiles
 	tiles=pygame.transform.scale(pygame.image.load('tiles/Crate.png'), (tile_length,tile_length))
@@ -150,7 +154,8 @@ while(True):
 
 		bike.tire_position_update()
 		win.blit(frontwheel_img[1],(bike.front_wheel_x,bike.front_wheel_y))
-		win.blit(backwheel_img[0],(bike.back_wheel_x,bike.back_wheel_y))
+		win.blit(backwheel_img[rollCount],(bike.back_wheel_x,bike.back_wheel_y))
+		print(rollCount)
 
 		#tiles drawing
 		tilesGeneration()
@@ -283,8 +288,21 @@ while(True):
 			if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and no_forward==False and tire_right_collide<tile_x:
 				bike.body_x+=acceleration
 
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
+
+
 			elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity:
 				bike.body_x-=decceleration
+
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
 
 			elif tire_right_collide>=tile_x:
 				no_forward=True
@@ -317,8 +335,20 @@ while(True):
 			if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
 				bike.body_x+=acceleration
 
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
+
 			elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity:
 				bike.body_x-=decceleration
+
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
 
 			temp_land=default_land
 
@@ -343,8 +373,20 @@ while(True):
 			if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity and tire_bottom_collide<=tile_y:
 				bike.body_x+=acceleration
 
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
+
 			elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity:
 				bike.body_x-=decceleration
+
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
 
 			temp_land=tile_y
 
@@ -373,8 +415,20 @@ while(True):
 			if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity:
 				bike.body_x+=acceleration
 
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
+
 			elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity:
 				bike.body_x-=decceleration
+
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
 
 			temp_land=default_land
 
@@ -399,8 +453,20 @@ while(True):
 			if keys[pygame.K_w] and bike.body_x<=(screen_width-width) and velocity<=max_velocity :
 				bike.body_x+=acceleration
 
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
+
 			elif keys[pygame.K_s] and bike.body_x>=0 and velocity<=max_velocity and no_backward==False and tire_left_collide>tile_x+tile_length:
 				bike.body_x-=decceleration
+
+				# Makes the tires rotate as you move
+				if(rollCount>=1):
+					rollCount=0
+				else:
+					rollCount+=1
 
 			elif tire_left_collide<=tile_x:
 				no_backward=True
