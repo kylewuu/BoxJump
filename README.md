@@ -7,6 +7,8 @@ Top score is your highscore
 
 Lower score is your current round score
 
+Click on `clickMeToPlay.lnk` to play
+
 ## Controls
 
 W- Move forward
@@ -14,3 +16,6 @@ W- Move forward
 S- Move backward
 
 SPACE- jump
+
+---
+Made in 2018
